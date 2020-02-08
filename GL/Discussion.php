@@ -8,7 +8,7 @@
 
 
 <!DOCTYPE html><html class=''>
-<?php 
+<?php
   session_start();
   if(!isset($_SESSION["id"])){
     header("location: index.php");
@@ -31,67 +31,201 @@
   <div id="sidepanel">
     <div id="profile">
       <div class="wrap">
-        <img id="profile-img" src="http://emilcarlsson.se/assets/mikeross.png" class="online" alt="" />
-        <p><?php echo $_SESSION["username"]; ?></p>        
+        <img id="profile-img" src="img/you.png" class="online" alt="" />
+        <p> Summoner : <?php echo $_SESSION["username"]; ?></p>
       </div>
     </div>
-    <div id="search">
-      <label for=""><i class="fa fa-search" aria-hidden="true"></i></label>
-      <input type="text" placeholder="Search contacts..." />
-    </div>
+
     <div id="contacts">
+
+
+
+
       <ul>
+
+
+
+
+<!--send inv-->
+<?php
+$link=mysqli_connect("localhost", "root", "","gl");
+if(isset($_POST["addc"])) {
+$recpu = $_POST["nom"];
+$_query = mysqli_query($link,"SELECT id FROM members WHERE username = '" . $recpu . "'");
+$_row = mysqli_fetch_array($_query);
+$recp = $_row["id"];
+$query = mysqli_query($link,"SELECT id FROM members WHERE id = '" . $recp . "'");
+if(mysqli_num_rows($query) > 0) {
+$_query = mysqli_query($link,"SELECT * FROM friend_requests WHERE sender = '" . $_SESSION["id"] . "' AND recipient = '" . $recp . "'");
+if(mysqli_num_rows($_query) == 0) {
+mysqli_query($link,"INSERT INTO friend_requests SET sender = '" . $_SESSION["id"] . "', recipient = '" . $recp . "'");
+}
+}
+}
+?>
+
+
+
+
+
+<!-- Accepte inv-->
+<?php
+$link=mysqli_connect("localhost", "root", "","gl");
+if(isset($_GET["accept"])) {
+$query = mysqli_query($link,"SELECT * FROM friend_requests WHERE sender = '" . $_GET["accept"] . "' AND recipient = '" . $_SESSION["id"] . "'");
+if(mysqli_num_rows($query) > 0) {
+$_query = mysqli_query($link,"SELECT * FROM members WHERE id = '" . $_GET["accept"] . "'");
+$_row = mysqli_fetch_array($_query);
+$friends = unserialize($_row["friends"]);
+$friends[] = $_SESSION["id"];
+mysqli_query($link,"UPDATE members SET friends = '" . serialize($friends) . "' WHERE id = '" . $_GET["accept"] . "'");
+$_query = mysqli_query($link,"SELECT * FROM members WHERE id = '" . $_SESSION["id"] . "'");
+$_row = mysqli_fetch_array($_query);
+$friends = unserialize($_row["friends"]);
+$friends[] = $_GET["accept"];
+mysqli_query($link,"UPDATE members SET friends = '" . serialize($friends) . "' WHERE id = '" . $_SESSION["id"] . "'");
+}
+mysqli_query($link,"DELETE FROM friend_requests WHERE sender = '" . $_GET["accept"] . "' AND recipient = '" . $_SESSION["id"] . "'");
+}
+?>
+
+<!-- DELETE inv -->
+
+<?php
+$link=mysqli_connect("localhost", "root", "","gl");
+if(isset($_GET["refuse"])) {
+$query = mysqli_query($link,"SELECT * FROM friend_requests WHERE sender = '" . $_GET["refuse"] . "' AND recipient = '" . $_SESSION["id"] . "'");
+if(mysqli_num_rows($query) > 0) {
+
+mysqli_query($link,"DELETE FROM friend_requests WHERE sender = '" . $_GET["refuse"] . "' AND recipient = '" . $_SESSION["id"] . "'");
+}}
+?>
+
+
+<li class="contact">
+    <p class="preview" align="center">  &#9830 Friend List : </p>
+</li>
+
+
+
+<!-- start or rech or all -->
+
+
+
+
+<?php
+$link=mysqli_connect("localhost", "root", "","gl");
+
+        $query = mysqli_query($link,"SELECT friends FROM members WHERE id = '" . $_SESSION["id"] . "'");
+        while($row = mysqli_fetch_array($query)) {
+        $friends = unserialize($row["friends"]);
+        if(isset($friends[0])) {
+        foreach($friends as $friend) {
+
+              if(isset($_POST['rech'])){
+                  $name = $_POST["nom"];
+                    $_query = mysqli_query($link,"SELECT username FROM members WHERE id = '" . $friend . "' && username ='" . $name . "'");
+              }
+              else {
+                  $_query = mysqli_query($link,"SELECT * FROM members WHERE id = '" . $friend . "'");
+              }
+
+        $_row = mysqli_fetch_array($_query);
+        if(!$_row) break; ?>
+
         <li class="contact">
           <div class="wrap">
             <span class="contact-status online"></span>
-            <img src="http://emilcarlsson.se/assets/louislitt.png" alt="" />
+              <img id="profile-img" src="img/them.png" class="online" alt="" />
             <div class="meta">
-              <p class="name">Louis Litt</p>
-              <p class="preview">You just got LITT up, Mike.</p>
+              <p class="name">  <?php echo $_row["username"] . "&nbsp &nbsp <a href=\"" . $_SERVER["PHP_SELF"] . "?anis=" . $_row["id"] . "\"> &#9993 </a>";?></p>
+
             </div>
           </div>
         </li>
-        <li class="contact active">
-          <div class="wrap">
-            <span class="contact-status busy"></span>
-            <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
-            <div class="meta">
-              <p class="name">Harvey Specter</p>
-              <p class="preview">Wrong. You take the gun, or you pull out a bigger one. Or, you call their bluff. Or, you do any one of a hundred and forty six other things.</p>
-            </div>
-          </div>
-        </li>
-        <li class="contact">
-          <div class="wrap">
-            <span class="contact-status"></span>
-            <img src="http://emilcarlsson.se/assets/charlesforstman.png" alt="" />
-            <div class="meta">
-              <p class="name">Charles Forstman</p>
-              <p class="preview">Mike, this isn't over.</p>
-            </div>
-          </div>
-        </li>
-        <li class="contact">
-          <div class="wrap">
-            <span class="contact-status"></span>
-            <img src="http://emilcarlsson.se/assets/jonathansidwell.png" alt="" />
-            <div class="meta">
-              <p class="name">Jonathan Sidwell</p>
-              <p class="preview"><span>You:</span> That's bullshit. This deal is solid.</p>
-            </div>
-          </div>
-        </li>
+
+
+
+<?php
+        }
+        }
+        }
+        ?>
+
+<!--end of rech or all-->
+
+
+  <li class="contact">
+      <p class="preview" align="center">  &#9830 Friend Requests : </p>
+  </li>
+
+<!--Start of friend Requests-->
+<?php
+$link=mysqli_connect("localhost", "root", "","gl");
+  $query = mysqli_query($link,"SELECT * FROM friend_requests WHERE recipient = '" . $_SESSION["id"] . "'");
+  if(mysqli_num_rows($query) > 0) {
+  while($row = mysqli_fetch_array($query)) {
+  $_query = mysqli_query($link,"SELECT * FROM members WHERE id = '" . $row["sender"] . "'");
+  while($_row = mysqli_fetch_array($_query)) { ?>
+
+    <li class="contact">
+      <div class="wrap">
+        <span class="contact-status"></span>
+        <img src="img/add.png" alt="" />
+        <div class="meta">
+          <?php echo $_row["username"] . " invited you. &nbsp <a href=\"" . $_SERVER["PHP_SELF"] . "?accept=" . $_row["id"] . "\"> &#10004;</a>  &nbsp <a href=\"" . $_SERVER["PHP_SELF"] . "?refuse=" . $_row["id"] . "\"> &#10006;</a> ";?>
+        </div>
+      </div>
+    </li>
+
+
+  <?php
+  }
+  }
+  }
+?>
+
+<!--end of friends request-->
+
       </ul>
     </div>
-    <div id="bottom-bar">
-      <button id="addcontact"><i class="fa fa-user-plus fa-fw" aria-hidden="true"></i> <span>Add contact</span></button>
-      <button id="settings"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> <span>Settings</span></button>
+    <div id="bottom-bar" style="text-align: center">
+
+<!--get info for add or search -->
+      <form action="#" method="post">
+            <button type="submit" id="addc" name="addc"></i> <b> Add friends </b></button>
+            <button type="submit" id="search" name="rech"><b> Search </b></button>
+            <input align"center" type="text" name="nom" placeholder="contacts" /> <label for=""><i class="fa fa-search" aria-hidden="true"></i></label>
+
+        </form>
+
+
+
+
+
     </div>
   </div>
+<!-- PLEASE SEE : Yaa Aniiiis, tu trouveras l'id f $_GET["anis"] ou bien $disid et le username f $disuser, et tu trouvera l'id de joueur 1 f $_SESSION["id"]  -->
+
+
+<?php
+if(isset($_GET["anis"])){
+  $link=mysqli_connect("localhost", "root", "","gl");
+  $disid = $_GET["anis"];
+  $_query = mysqli_query($link,"SELECT username FROM members WHERE id = '" . $disid . "'");
+  $_row = mysqli_fetch_array($_query);
+  $disuser = $_row["username"];
+
+}
+else {
+      $disuser = "1";
+}
+ ?>
+
   <div class="content">
     <div class="contact-profile">
-      <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
-      <p>Harvey Specter</p>
+      <img src="img/them.png" alt="" />
+      <p><?=$disuser?></p>
       <div class="social-media">
         <i class="fa fa-facebook" aria-hidden="true"></i>
         <i class="fa fa-twitter" aria-hidden="true"></i>
@@ -100,7 +234,7 @@
     </div>
     <div class="messages">
       <ul>
-       
+
       </ul>
     </div>
     <div class="message-input">
@@ -117,7 +251,7 @@
 
 <script src='//production-assets.codepen.io/assets/common/stopExecutionOnTimeout-b2a7b3fe212eaa732349046d8416e00a9dec26eb7fd347590fbced3ab38af52e.js'></script><script src='https://code.jquery.com/jquery-2.2.4.min.js'></script>
 
- 
+
 
 <script >
 
@@ -150,7 +284,7 @@ $("#status-options ul li").click(function() {
   $("#status-busy").removeClass("active");
   $("#status-offline").removeClass("active");
   $(this).addClass("active");
-  
+
   if($("#status-online").hasClass("active")) {
     $("#profile-img").addClass("online");
   } else if ($("#status-away").hasClass("active")) {
@@ -162,7 +296,7 @@ $("#status-options ul li").click(function() {
   } else {
     $("#profile-img").removeClass();
   };
-  
+
   $("#status-options").removeClass("active");
 });
 
@@ -172,13 +306,13 @@ function newMessage() {
     return false;
   }
   socket.emit('envoyer_message', {idj:id,idR:recepteur,id_discussion:1,message:message});
-  $('<li class="sent"><img src="http://emilcarlsson.se/assets/mikeross.png" alt="" /><p>' + message + '</p></li>').appendTo($('.messages ul'));
+  $('<li class="sent"><img src="img/you.png" alt="" /><p>' + message + '</p></li>').appendTo($('.messages ul'));
   $('.message-input input').val(null);
   $('.contact.active .preview').html('<span>You: </span> ' + message+'');
   $(".messages").animate({ scrollTop: $(document).height() }, "fast");
 };
 socket.on('reception_message', function(message) {
-        $('<li class="replies"><img src="http://emilcarlsson.se/assets/mikeross.png" alt="" /><p>' + message + '</p></li>').appendTo($('.messages ul'));
+        $('<li class="replies"><img src="img/them.png" alt="" /><p>' + message + '</p></li>').appendTo($('.messages ul'));
 
        $(".messages").animate({ scrollTop: $(document).height() }, "fast");
     });
