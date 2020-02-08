@@ -9,6 +9,7 @@
 
 <!DOCTYPE html><html class=''>
 <?php
+include 'php/database.inc';
   session_start();
   if(!isset($_SESSION["id"])){
     header("location: index.php");
@@ -86,8 +87,6 @@ $friends[] = $_GET["accept"];
 mysqli_query($link,"UPDATE members SET friends = '" . serialize($friends) . "' WHERE id = '" . $_SESSION["id"] . "'");
 }
 mysqli_query($link,"DELETE FROM friend_requests WHERE sender = '" . $_GET["accept"] . "' AND recipient = '" . $_SESSION["id"] . "'");
-mysqli_query($link,"INSERT INTO discussion SET id_joueur_1 = '" . $_SESSION["id"] . "', id_joueur_2 = '" . $_GET["accept"] . "'");
-
 }
 ?>
 
@@ -135,12 +134,12 @@ $link=mysqli_connect("localhost", "root", "","gl");
         $_row = mysqli_fetch_array($_query);
         if(!$_row) break; ?>
 
-        <li class="contact">
-          <div class="wrap">
+        <li class="contact" onclick="">
+          <div class="wrap" >
             <span class="contact-status online"></span>
               <img id="profile-img" src="img/them.png" class="online" alt="" />
             <div class="meta">
-              <p class="name">  <?php echo $_row["username"] . "&nbsp &nbsp <a href=\"" . $_SERVER["PHP_SELF"] . "?anis=" . $_row["id"] . "\"> &#9993 </a>";?></p>
+              <p class="name">  <?php echo $_row["username"] . "&nbsp &nbsp <a href=\"" . $_SERVER["PHP_SELF"] . "?id=" . $_row["id"] . "\"> &#9993 </a>";?></p>
 
             </div>
           </div>
@@ -155,8 +154,6 @@ $link=mysqli_connect("localhost", "root", "","gl");
         ?>
 
 <!--end of rech or all-->
-
-
   <li class="contact">
       <p class="preview" align="center">  &#9830 Friend Requests : </p>
   </li>
@@ -256,10 +253,17 @@ else {
 
 
 <script >
+<?php
+$database=new database();
+$result=$database->query("select id_discussion from discussion where id_joueur_1=".$_SESSION["id"]." and id_joueur_2=".$_GET["id"]." or id_joueur_2=".$_GET["id"]." and id_joueur_1=".$_SESSION["id"]);
+  $row=mysqli_fetch_assoc($result);
+
+  ?>
 
 var socket=io.connect("http://localhost:3000/");
             var id="<?php echo $_SESSION["id"];?>";
-            var recepteur=prompt("recepteur");;
+            var recepteur="<?php echo $_GET["id"];?>";
+            var discussion="<?php echo $row["id_discussion"];?>";
 /*socket.on('message', function(message) {
         alert('Le serveur a un message pour vous : ' + message);
 
@@ -267,7 +271,7 @@ var socket=io.connect("http://localhost:3000/");
     });*/
 socket.emit('nouveau_user', {nom:id});
 
-loadMessage(1);
+loadMessage(discussion);
   $(".messages").animate({ scrollTop: $(document).height() }, "fast");
 
 $("#profile-img").click(function() {
@@ -307,7 +311,7 @@ function newMessage() {
   if($.trim(message) == '') {
     return false;
   }
-  socket.emit('envoyer_message', {idj:id,idR:recepteur,id_discussion:1,message:message});
+  socket.emit('envoyer_message', {idj:id,idR:recepteur,id_discussion:discussion,message:message});
   $('<li class="sent"><img src="img/you.png" alt="" /><p>' + message + '</p></li>').appendTo($('.messages ul'));
   $('.message-input input').val(null);
   $('.contact.active .preview').html('<span>You: </span> ' + message+'');
@@ -315,7 +319,6 @@ function newMessage() {
 };
 socket.on('reception_message', function(message) {
         $('<li class="replies"><img src="img/them.png" alt="" /><p>' + message + '</p></li>').appendTo($('.messages ul'));
-
        $(".messages").animate({ scrollTop: $(document).height() }, "fast");
     });
 $('.submit').click(function() {
