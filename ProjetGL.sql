@@ -1,155 +1,194 @@
-/*==============================================================*/
-/* DBMS name:      MySQL 5.0                                    */
-/* Created on:     08/02/2020 23:15:28                          */
-/*==============================================================*/
+-- phpMyAdmin SQL Dump
+-- version 4.9.2
+-- https://www.phpmyadmin.net/
+--
+-- Hôte : 127.0.0.1:3306
+-- Généré le :  sam. 08 fév. 2020 à 23:18
+-- Version du serveur :  10.4.10-MariaDB
+-- Version de PHP :  7.3.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
+SET time_zone = "+00:00";
 
 
-drop trigger Trigger_1;
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
-drop table if exists Bug;
+--
+-- Base de données :  `gl`
+--
 
-drop table if exists Discussion;
+-- --------------------------------------------------------
 
-drop table if exists Message;
+--
+-- Structure de la table `bug`
+--
 
-drop table if exists Signal_;
+DROP TABLE IF EXISTS `bug`;
+CREATE TABLE IF NOT EXISTS `bug` (
+  `id_bug` int(11) NOT NULL AUTO_INCREMENT,
+  `id_rapport` int(11) DEFAULT NULL,
+  `id_probleme` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id_bug`),
+  KEY `FK_Reference_10` (`id_probleme`),
+  KEY `FK_Reference_7` (`id_rapport`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-drop table if exists joueur;
+-- --------------------------------------------------------
 
-drop table if exists probleme;
+--
+-- Structure de la table `discussion`
+--
 
-drop table if exists rapport;
+DROP TABLE IF EXISTS `discussion`;
+CREATE TABLE IF NOT EXISTS `discussion` (
+  `id_discussion` int(11) NOT NULL AUTO_INCREMENT,
+  `id_joueur_1` int(11) NOT NULL,
+  `id_joueur_2` int(11) NOT NULL,
+  `id_message` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id_discussion`),
+  KEY `FK_Reference_3` (`id_joueur_1`),
+  KEY `FK_Reference_4` (`id_joueur_2`),
+  KEY `FK_Reference_5` (`id_message`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-drop table if exists suspendre;
+-- --------------------------------------------------------
 
-/*==============================================================*/
-/* Table: Bug                                                   */
-/*==============================================================*/
-create table Bug
-(
-   id_bug               int not null auto_increment,
-   id_rapport           int,
-   id_probleme          int,
-   primary key (id_bug)
-);
+--
+-- Structure de la table `friend_requests`
+--
 
-/*==============================================================*/
-/* Table: Discussion                                            */
-/*==============================================================*/
-create table Discussion
-(
-   id_discussion        int not null auto_increment,
-   id_joueur_1          int not null,
-   id_joueur_2          int not null,
-   id_message           int,
-   primary key (id_discussion)
-);
+DROP TABLE IF EXISTS `friend_requests`;
+CREATE TABLE IF NOT EXISTS `friend_requests` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sender` int(11) NOT NULL,
+  `recipient` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
 
-/*==============================================================*/
-/* Table: Message                                               */
-/*==============================================================*/
-create table Message
-(
-   id_message           int not null auto_increment,
-   id_joueur            int,
-   id_discussion        int,
-   message              varchar(500),
-   time_send            datetime,
-   time_vu              datetime,
-   primary key (id_message)
-);
+--
+-- Déchargement des données de la table `friend_requests`
+--
 
-/*==============================================================*/
-/* Table: Signal_                                               */
-/*==============================================================*/
-create table Signal_
-(
-   id_signal            int not null auto_increment,
-   id_joueur_signal     int,
-   id_rapport           int,
-   primary key (id_signal)
-);
+INSERT INTO `friend_requests` (`id`, `sender`, `recipient`) VALUES
+(6, 2, 1),
+(7, 3, 1),
+(8, 4, 1);
 
-/*==============================================================*/
-/* Table: joueur                                                */
-/*==============================================================*/
-create table joueur
-(
-   id_joueur            int not null auto_increment,
-   username             varchar(50),
-   password             varchar(50),
-   friends              text,
-   primary key (id_joueur)
-);
+-- --------------------------------------------------------
 
-/*==============================================================*/
-/* Table: probleme                                              */
-/*==============================================================*/
-create table probleme
-(
-   id_probleme          int not null auto_increment,
-   nom                  varchar(200),
-   primary key (id_probleme)
-);
+--
+-- Structure de la table `joueur`
+--
 
-/*==============================================================*/
-/* Table: rapport                                               */
-/*==============================================================*/
-create table rapport
-(
-   id_rapport           int not null auto_increment,
-   id_joueur            int,
-   description          varchar(500),
-   date_send            datetime,
-   primary key (id_rapport)
-);
+DROP TABLE IF EXISTS `joueur`;
+CREATE TABLE IF NOT EXISTS `joueur` (
+  `id_joueur` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) DEFAULT NULL,
+  `password` varchar(50) DEFAULT NULL,
+  `friends` text DEFAULT NULL,
+  PRIMARY KEY (`id_joueur`)
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
-/*==============================================================*/
-/* Table: suspendre                                             */
-/*==============================================================*/
-create table suspendre
-(
-   id_suspendre         int not null auto_increment,
-   id_signal            int,
-   id_joueur            int,
-   date_debut           datetime,
-   date_fin             datetime,
-   primary key (id_suspendre)
-);
+--
+-- Déchargement des données de la table `joueur`
+--
 
-alter table Bug add constraint FK_Reference_10 foreign key (id_probleme)
-      references probleme (id_probleme) on delete restrict on update restrict;
+INSERT INTO `joueur` (`id_joueur`, `username`, `password`, `friends`) VALUES
+(1, 'anis', 'anis', ''),
+(2, 'mehdi', 'mehdi', ''),
+(3, 'malek', 'malek', ''),
+(4, 'abdou', 'abdou', ''),
+(5, 'mounir', 'mounir', NULL),
+(6, 'sofiane', 'sofiane', NULL);
 
-alter table Bug add constraint FK_Reference_7 foreign key (id_rapport)
-      references rapport (id_rapport) on delete restrict on update restrict;
+-- --------------------------------------------------------
 
-alter table Discussion add constraint FK_Reference_3 foreign key (id_joueur_1)
-      references joueur (id_joueur) on delete restrict on update restrict;
+--
+-- Structure de la table `message`
+--
 
-alter table Discussion add constraint FK_Reference_4 foreign key (id_joueur_2)
-      references joueur (id_joueur) on delete restrict on update restrict;
+DROP TABLE IF EXISTS `message`;
+CREATE TABLE IF NOT EXISTS `message` (
+  `id_message` int(11) NOT NULL AUTO_INCREMENT,
+  `id_joueur` int(11) DEFAULT NULL,
+  `id_discussion` int(11) DEFAULT NULL,
+  `message` varchar(500) DEFAULT NULL,
+  `time_send` datetime DEFAULT NULL,
+  `time_vu` datetime DEFAULT NULL,
+  PRIMARY KEY (`id_message`),
+  KEY `FK_Reference_1` (`id_joueur`),
+  KEY `FK_Reference_13` (`id_discussion`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-alter table Discussion add constraint FK_Reference_5 foreign key (id_message)
-      references Message (id_message) on delete set null on update restrict;
+-- --------------------------------------------------------
 
-alter table Message add constraint FK_Reference_1 foreign key (id_joueur)
-      references joueur (id_joueur) on delete restrict on update restrict;
+--
+-- Structure de la table `probleme`
+--
 
-alter table Message add constraint FK_Reference_13 foreign key (id_discussion)
-      references Discussion (id_discussion) on delete restrict on update restrict;
+DROP TABLE IF EXISTS `probleme`;
+CREATE TABLE IF NOT EXISTS `probleme` (
+  `id_probleme` int(11) NOT NULL AUTO_INCREMENT,
+  `nom` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`id_probleme`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-alter table Signal_ add constraint FK_Reference_8 foreign key (id_joueur_signal)
-      references joueur (id_joueur) on delete restrict on update restrict;
+-- --------------------------------------------------------
 
-alter table Signal_ add constraint FK_Reference_9 foreign key (id_rapport)
-      references rapport (id_rapport) on delete restrict on update restrict;
+--
+-- Structure de la table `rapport`
+--
 
-alter table rapport add constraint FK_Reference_6 foreign key (id_joueur)
-      references joueur (id_joueur) on delete restrict on update restrict;
+DROP TABLE IF EXISTS `rapport`;
+CREATE TABLE IF NOT EXISTS `rapport` (
+  `id_rapport` int(11) NOT NULL AUTO_INCREMENT,
+  `id_joueur` int(11) DEFAULT NULL,
+  `description` varchar(500) DEFAULT NULL,
+  `date_send` datetime DEFAULT NULL,
+  PRIMARY KEY (`id_rapport`),
+  KEY `FK_Reference_6` (`id_joueur`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-alter table suspendre add constraint FK_Reference_11 foreign key (id_signal)
-      references Signal_ (id_signal) on delete restrict on update restrict;
+-- --------------------------------------------------------
 
-alter table suspendre add constraint FK_Reference_12 foreign key (id_joueur)
-      references joueur (id_joueur) on delete restrict on update restrict;
+--
+-- Structure de la table `signal_`
+--
 
+DROP TABLE IF EXISTS `signal_`;
+CREATE TABLE IF NOT EXISTS `signal_` (
+  `id_signal` int(11) NOT NULL AUTO_INCREMENT,
+  `id_joueur_signal` int(11) DEFAULT NULL,
+  `id_rapport` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id_signal`),
+  KEY `FK_Reference_8` (`id_joueur_signal`),
+  KEY `FK_Reference_9` (`id_rapport`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `suspendre`
+--
+
+DROP TABLE IF EXISTS `suspendre`;
+CREATE TABLE IF NOT EXISTS `suspendre` (
+  `id_suspendre` int(11) NOT NULL AUTO_INCREMENT,
+  `id_signal` int(11) DEFAULT NULL,
+  `id_joueur` int(11) DEFAULT NULL,
+  `date_debut` datetime DEFAULT NULL,
+  `date_fin` datetime DEFAULT NULL,
+  PRIMARY KEY (`id_suspendre`),
+  KEY `FK_Reference_11` (`id_signal`),
+  KEY `FK_Reference_12` (`id_joueur`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

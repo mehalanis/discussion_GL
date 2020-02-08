@@ -52,10 +52,10 @@ include 'php/database.inc';
 $link=mysqli_connect("localhost", "root", "","gl");
 if(isset($_POST["addc"])) {
 $recpu = $_POST["nom"];
-$_query = mysqli_query($link,"SELECT id FROM members WHERE username = '" . $recpu . "'");
+$_query = mysqli_query($link,"SELECT * FROM joueur WHERE username = '" . $recpu . "'");
 $_row = mysqli_fetch_array($_query);
-$recp = $_row["id"];
-$query = mysqli_query($link,"SELECT id FROM members WHERE id = '" . $recp . "'");
+$recp = $_row["id_joueur"];
+$query = mysqli_query($link,"SELECT * FROM joueur WHERE id_joueur = '" . $recp . "'");
 if(mysqli_num_rows($query) > 0) {
 $_query = mysqli_query($link,"SELECT * FROM friend_requests WHERE sender = '" . $_SESSION["id"] . "' AND recipient = '" . $recp . "'");
 if(mysqli_num_rows($_query) == 0) {
@@ -75,18 +75,19 @@ $link=mysqli_connect("localhost", "root", "","gl");
 if(isset($_GET["accept"])) {
 $query = mysqli_query($link,"SELECT * FROM friend_requests WHERE sender = '" . $_GET["accept"] . "' AND recipient = '" . $_SESSION["id"] . "'");
 if(mysqli_num_rows($query) > 0) {
-$_query = mysqli_query($link,"SELECT * FROM members WHERE id = '" . $_GET["accept"] . "'");
+$_query = mysqli_query($link,"SELECT * FROM joueur WHERE id_joueur = '" . $_GET["accept"] . "'");
 $_row = mysqli_fetch_array($_query);
 $friends = unserialize($_row["friends"]);
 $friends[] = $_SESSION["id"];
-mysqli_query($link,"UPDATE members SET friends = '" . serialize($friends) . "' WHERE id = '" . $_GET["accept"] . "'");
-$_query = mysqli_query($link,"SELECT * FROM members WHERE id = '" . $_SESSION["id"] . "'");
+mysqli_query($link,"UPDATE joueur SET friends = '" . serialize($friends) . "' WHERE id_joueur = '" . $_GET["accept"] . "'");
+$_query = mysqli_query($link,"SELECT * FROM joueur WHERE id_joueur = '" . $_SESSION["id"] . "'");
 $_row = mysqli_fetch_array($_query);
 $friends = unserialize($_row["friends"]);
 $friends[] = $_GET["accept"];
-mysqli_query($link,"UPDATE members SET friends = '" . serialize($friends) . "' WHERE id = '" . $_SESSION["id"] . "'");
+mysqli_query($link,"UPDATE joueur SET friends = '" . serialize($friends) . "' WHERE id_joueur = '" . $_SESSION["id"] . "'");
 }
 mysqli_query($link,"DELETE FROM friend_requests WHERE sender = '" . $_GET["accept"] . "' AND recipient = '" . $_SESSION["id"] . "'");
+//mysqli_query($link,"INSERT INTO discussion SET id_joueur_1 = '" . $_SESSION["id"] . "', id_joueur_2 = '" . $_GET["accept"] . "'"); A VERIFIER
 }
 ?>
 
@@ -117,7 +118,7 @@ mysqli_query($link,"DELETE FROM friend_requests WHERE sender = '" . $_GET["refus
 <?php
 $link=mysqli_connect("localhost", "root", "","gl");
 
-        $query = mysqli_query($link,"SELECT friends FROM members WHERE id = '" . $_SESSION["id"] . "'");
+        $query = mysqli_query($link,"SELECT * FROM joueur WHERE id_joueur = '" . $_SESSION["id"] . "'");
         while($row = mysqli_fetch_array($query)) {
         $friends = unserialize($row["friends"]);
         if(isset($friends[0])) {
@@ -125,21 +126,21 @@ $link=mysqli_connect("localhost", "root", "","gl");
 
               if(isset($_POST['rech'])){
                   $name = $_POST["nom"];
-                    $_query = mysqli_query($link,"SELECT username FROM members WHERE id = '" . $friend . "' && username ='" . $name . "'");
+                    $_query = mysqli_query($link,"SELECT * FROM joueur WHERE id_joueur = '" . $friend . "' && username ='" . $name . "'");
               }
               else {
-                  $_query = mysqli_query($link,"SELECT * FROM members WHERE id = '" . $friend . "'");
+                  $_query = mysqli_query($link,"SELECT * FROM joueur WHERE id_joueur = '" . $friend . "'");
               }
 
         $_row = mysqli_fetch_array($_query);
-        if(!$_row) break; ?>
+        if(!$_row) continue; ?>
 
         <li class="contact" onclick="">
           <div class="wrap" >
             <span class="contact-status online"></span>
               <img id="profile-img" src="img/them.png" class="online" alt="" />
             <div class="meta">
-              <p class="name">  <?php echo $_row["username"] . "&nbsp &nbsp <a href=\"" . $_SERVER["PHP_SELF"] . "?id=" . $_row["id"] . "\"> &#9993 </a>";?></p>
+              <p class="name">  <?php echo $_row["username"] . "&nbsp &nbsp <a href=\"" . $_SERVER["PHP_SELF"] . "?id=" . $_row["id_joueur"] . "\"> &#9993 </a>";?></p>
 
             </div>
           </div>
@@ -164,7 +165,7 @@ $link=mysqli_connect("localhost", "root", "","gl");
   $query = mysqli_query($link,"SELECT * FROM friend_requests WHERE recipient = '" . $_SESSION["id"] . "'");
   if(mysqli_num_rows($query) > 0) {
   while($row = mysqli_fetch_array($query)) {
-  $_query = mysqli_query($link,"SELECT * FROM members WHERE id = '" . $row["sender"] . "'");
+  $_query = mysqli_query($link,"SELECT * FROM joueur WHERE id_joueur = '" . $row["sender"] . "'");
   while($_row = mysqli_fetch_array($_query)) { ?>
 
     <li class="contact">
@@ -172,7 +173,7 @@ $link=mysqli_connect("localhost", "root", "","gl");
         <span class="contact-status"></span>
         <img src="img/add.png" alt="" />
         <div class="meta">
-          <?php echo $_row["username"] . " invited you. &nbsp <a href=\"" . $_SERVER["PHP_SELF"] . "?accept=" . $_row["id"] . "\"> &#10004;</a>  &nbsp <a href=\"" . $_SERVER["PHP_SELF"] . "?refuse=" . $_row["id"] . "\"> &#10006;</a> ";?>
+          <?php echo $_row["username"] . " invited you. &nbsp <a href=\"" . $_SERVER["PHP_SELF"] . "?accept=" . $_row["id_joueur"] . "\"> &#10004;</a>  &nbsp <a href=\"" . $_SERVER["PHP_SELF"] . "?refuse=" . $_row["id_joueur"] . "\"> &#10006;</a> ";?>
         </div>
       </div>
     </li>
@@ -208,10 +209,10 @@ $link=mysqli_connect("localhost", "root", "","gl");
 
 
 <?php
-if(isset($_GET["anis"])){
+if(isset($_GET["id"])){
   $link=mysqli_connect("localhost", "root", "","gl");
-  $disid = $_GET["anis"];
-  $_query = mysqli_query($link,"SELECT username FROM members WHERE id = '" . $disid . "'");
+  $disid = $_GET["id"];
+  $_query = mysqli_query($link,"SELECT * FROM joueur WHERE id_joueur = '" . $disid . "'");
   $_row = mysqli_fetch_array($_query);
   $disuser = $_row["username"];
 
