@@ -3,7 +3,7 @@ require 'database.inc';
 
 if((isset($_GET["id_discussion"]))&&(!empty($_GET["id_discussion"]))){
   $database=new database();
-  $result=$database->query("select * from message where id_discussion=".$_GET["id_discussion"]);
+  $result=$database->query("select * from message where id_discussion=".$_GET["id_discussion"]." order by id_message ASC");
   $list=array();
   $message=array();
   while ($row=mysqli_fetch_assoc($result)) {

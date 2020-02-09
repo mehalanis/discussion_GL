@@ -46,7 +46,7 @@ io.on("connection", function(v) {
    });
 
     if(tab_user_online[va.idR]!=null){
-      v.to(tab_user_online[va.idR]).emit("reception_message",va.message);
+      v.to(tab_user_online[va.idR]).emit("reception_message",{message :va.message,idj:va.idj});
     }
     
    });

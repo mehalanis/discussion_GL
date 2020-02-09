@@ -418,7 +418,7 @@ body {
 #frame #sidepanel #contacts ul li.contact .wrap .meta .name {
   font-weight: 600;
 }
-#frame #sidepanel #contacts ul li.contact .wrap .meta .preview {
+#frame #sidepanel #contacts ul li.contact .wrap .meta .preview ,.message{
   margin: 5px 0 0 0;
   padding: 0 0 1px;
   font-weight: 400;
@@ -430,7 +430,7 @@ body {
   -webkit-transition: 1s all ease;
   transition: 1s all ease;
 }
-#frame #sidepanel #contacts ul li.contact .wrap .meta .preview span {
+#frame #sidepanel #contacts ul li.contact .wrap .meta .preview span ,.message{
   position: initial;
   border-radius: initial;
   background: none;
