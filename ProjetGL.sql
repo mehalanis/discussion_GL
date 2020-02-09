@@ -4,7 +4,7 @@
 /*==============================================================*/
 
 
-drop trigger Trigger_1;
+drop trigger if exists Trigger_1;
 
 drop table if exists Bug;
 
@@ -120,6 +120,8 @@ create table joueur
    id_joueur            int not null auto_increment,
    username             varchar(50),
    password             varchar(50),
+   `Point` int(11) NOT NULL DEFAULT 0,
+  `ID_Guild` int(11) DEFAULT NULL,
    friends              text,
    primary key (id_joueur)
 );
@@ -197,4 +199,3 @@ alter table suspendre add constraint FK_Reference_11 foreign key (id_signal)
 
 alter table suspendre add constraint FK_Reference_12 foreign key (id_joueur)
       references joueur (id_joueur) on delete restrict on update restrict;
-
