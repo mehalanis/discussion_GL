@@ -133,7 +133,9 @@ $link=mysqli_connect("localhost", "root", "","gl");
               }
 
         $_row = mysqli_fetch_array($_query);
-        if(!$_row) continue; ?>
+        if(!$_row) continue; 
+        if(!isset($_GET["id"])) header("location: Discussion.php?id=".$_row["id_joueur"]);
+        ?>
 
         <li class="contact <?php if($_GET["id"]==$_row["id_joueur"]) echo "active";?>" onclick="">
           <div class="wrap" >
@@ -250,10 +252,8 @@ else {
     <div class="contact-profile">
       <img src="img/them.png" alt="" />
       <p><?=$disuser?></p>
-      <div class="social-media">
-        <i class="fa fa-facebook" aria-hidden="true"></i>
-        <i class="fa fa-twitter" aria-hidden="true"></i>
-         <i class="fa fa-instagram" aria-hidden="true"></i>
+      <div class="social-media" style="margin-right: 20px;">
+         <a href="http://localhost/Projet/the-ancient-time/signal.php?j=<?php echo $_GET['id'];?>">Signaler</a>
       </div>
     </div>
     <div class="messages">
