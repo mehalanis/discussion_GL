@@ -3,7 +3,10 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <!------ Include the above in your HEAD tag ---------->
 
-
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
 <!------ Include the above in your HEAD tag ---------->
 
 
@@ -33,7 +36,7 @@ include 'php/database.inc';
     <div id="profile">
       <div class="wrap">
         <img id="profile-img" src="img/you.png" class="online" alt="" />
-        <p> Summoner : <?php $kwv="Guilde.php";echo $_SESSION["username"]. "&nbsp &nbsp <a href=\"" . $kwv . "?idguilde=" . $_SESSION["username"] . "\"> Guilde </a>";?></p>
+        <p> Summoner : <?php echo $_SESSION["username"]; ?></p>
       </div>
     </div>
 
@@ -225,24 +228,73 @@ else {
   <div class="content">
     <div class="contact-profile">
       <img src="img/them.png" alt="" />
-      <p><?=$disuser?></p>
-      <div class="social-media">
-        <i class="fa fa-facebook" aria-hidden="true"></i>
-        <i class="fa fa-twitter" aria-hidden="true"></i>
-         <i class="fa fa-instagram" aria-hidden="true"></i>
-      </div>
+
+
+
+
+      <p><?php
+      $link=mysqli_connect("localhost", "root", "","gl");
+                $query = mysqli_query($link,"SELECT * FROM joueur WHERE username = '" . $_GET["idguilde"] . "'");
+                $_row = mysqli_fetch_array($query);
+                $idguild = $_row["ID_Guild"];
+                $query = mysqli_query($link,"SELECT * FROM guild WHERE ID_Guild = '" . $idguild . "'");
+
+                $row = mysqli_fetch_array($query); echo $row["Nom_Guild"]; ?></p>
+
     </div>
     <div class="messages">
       <ul>
 
+        <div class="container">
+        	<div class="row">
+        <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Classement</th>
+                <th>Username</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+            <tbody>
+
+
+
+              <?php
+              $link=mysqli_connect("localhost", "root", "","gl");
+                        $query = mysqli_query($link,"SELECT * FROM joueur WHERE username = '" . $_GET["idguilde"] . "'");
+                        $row = mysqli_fetch_array($query);
+                        $idguild = $row["ID_Guild"];
+                      $query = mysqli_query($link,"SELECT * FROM joueur WHERE ID_Guild = '" . $idguild . "' ORDER BY Point DESC");
+                      $cpt=1;
+                      while($_row = mysqli_fetch_array($query)) {
+                      ?>
+
+                      <tr>
+                        <td><?php echo $cpt++ ;?></td>
+                        <td><p class="name">  <?php echo $_row["username"] ;?></p></td>
+                        <td><p class="name">  <?php echo $_row["Point"] ;?></p></td>
+                      </tr>
+
+
+
+              <?php
+                      }
+
+                      ?>
+
+
+
+
+
+
+
+            </tbody>
+          </table>
+        	</div>
+        </div>
+
+
       </ul>
-    </div>
-    <div class="message-input">
-      <div class="wrap">
-      <input type="text" placeholder="Write your message..." />
-      <i class="fa fa-paperclip attachment" aria-hidden="true"></i>
-      <button class="submit"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
-      </div>
     </div>
   </div>
 </div>

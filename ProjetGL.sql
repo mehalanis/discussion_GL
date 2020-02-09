@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le :  sam. 08 fév. 2020 à 23:18
+-- Généré le :  Dim 09 fév. 2020 à 12:47
 -- Version du serveur :  10.4.10-MariaDB
 -- Version de PHP :  7.3.12
 
@@ -68,16 +68,42 @@ CREATE TABLE IF NOT EXISTS `friend_requests` (
   `sender` int(11) NOT NULL,
   `recipient` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `friend_requests`
 --
 
 INSERT INTO `friend_requests` (`id`, `sender`, `recipient`) VALUES
-(6, 2, 1),
-(7, 3, 1),
-(8, 4, 1);
+(8, 4, 1),
+(9, 3, 1),
+(10, 2, 1),
+(11, 5, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `guild`
+--
+
+DROP TABLE IF EXISTS `guild`;
+CREATE TABLE IF NOT EXISTS `guild` (
+  `ID_Guild` int(3) NOT NULL AUTO_INCREMENT,
+  `Nom_Guild` varchar(15) NOT NULL,
+  `For_ce_Guild` int(2) NOT NULL,
+  `ID_Mond` int(2) NOT NULL,
+  `Members` text NOT NULL,
+  `Admin` varchar(15) NOT NULL,
+  PRIMARY KEY (`ID_Guild`),
+  KEY `ID_Mond` (`ID_Mond`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `guild`
+--
+
+INSERT INTO `guild` (`ID_Guild`, `Nom_Guild`, `For_ce_Guild`, `ID_Mond`, `Members`, `Admin`) VALUES
+(1, 'Heroes', 300, 1, 'a:3:{i:0;s:1:\"1\";i:1;s:1:\"2\";i:2;s:1:\"3\";}	', '1');
 
 -- --------------------------------------------------------
 
@@ -91,6 +117,8 @@ CREATE TABLE IF NOT EXISTS `joueur` (
   `username` varchar(50) DEFAULT NULL,
   `password` varchar(50) DEFAULT NULL,
   `friends` text DEFAULT NULL,
+  `Point` int(11) NOT NULL DEFAULT 0,
+  `ID_Guild` int(11) DEFAULT NULL,
   PRIMARY KEY (`id_joueur`)
 ) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
@@ -98,13 +126,13 @@ CREATE TABLE IF NOT EXISTS `joueur` (
 -- Déchargement des données de la table `joueur`
 --
 
-INSERT INTO `joueur` (`id_joueur`, `username`, `password`, `friends`) VALUES
-(1, 'anis', 'anis', ''),
-(2, 'mehdi', 'mehdi', ''),
-(3, 'malek', 'malek', ''),
-(4, 'abdou', 'abdou', ''),
-(5, 'mounir', 'mounir', NULL),
-(6, 'sofiane', 'sofiane', NULL);
+INSERT INTO `joueur` (`id_joueur`, `username`, `password`, `friends`, `Point`, `ID_Guild`) VALUES
+(1, 'anis', 'anis', '', 200, 1),
+(2, 'mehdi', 'mehdi', '', 150, 1),
+(3, 'malek', 'malek', '', 50, 1),
+(4, 'abdou', 'abdou', '', 0, NULL),
+(5, 'mounir', 'mounir', NULL, 0, NULL),
+(6, 'sofiane', 'sofiane', NULL, 0, NULL);
 
 -- --------------------------------------------------------
 
