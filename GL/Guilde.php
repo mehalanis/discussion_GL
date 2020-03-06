@@ -90,7 +90,7 @@ $friends[] = $_GET["accept"];
 mysqli_query($link,"UPDATE joueur SET friends = '" . serialize($friends) . "' WHERE id_joueur = '" . $_SESSION["id"] . "'");
 }
 mysqli_query($link,"DELETE FROM friend_requests WHERE sender = '" . $_GET["accept"] . "' AND recipient = '" . $_SESSION["id"] . "'");
-//mysqli_query($link,"INSERT INTO discussion SET id_joueur_1 = '" . $_SESSION["id"] . "', id_joueur_2 = '" . $_GET["accept"] . "'"); A VERIFIER
+mysqli_query($link,"INSERT INTO discussion SET id_joueur_1 = '" . $_SESSION["id"] . "', id_joueur_2 = '" . $_GET["accept"] . "'");
 }
 ?>
 
